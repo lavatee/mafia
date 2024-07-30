@@ -18,3 +18,7 @@ func (s *FriendsService) GetFriends(id int) ([]repository.MongoFriend, error) {
 func (s *FriendsService) AddFriend(userId int, friendId int) error {
 	return s.repo.AddFriend(userId, friendId)
 }
+
+func (s *FriendsService) DeleteFriend(userId int, friendId int) error {
+	return s.repo.DeleteFriend(userId, friendId)
+}

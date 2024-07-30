@@ -17,6 +17,7 @@ type Rooms interface {
 type Friends interface {
 	GetFriends(id int) ([]repository.MongoFriend, error)
 	AddFriend(userId int, friendId int) error
+	DeleteFriend(userId int, friendId int) error
 }
 type FriendshipRequests interface {
 }

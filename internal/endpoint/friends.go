@@ -45,5 +45,22 @@ func (e *Endpoint) AddFriend(c *gin.Context) {
 }
 
 func (e *Endpoint) DeleteFriend(c *gin.Context) {
-
+	userId, err := e.GetUserId(c)
+	if err != nil {
+		NewErrorResponse(c, http.StatusUnauthorized, err.Error())
+		return
+	}
+	friendId, err := strconv.Atoi(c.Param("friend_id"))
+	if err != nil {
+		NewErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+	err = e.service.DeleteFriend(userId, friendId)
+	if err != nil {
+		NewErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+	c.JSON(http.StatusOK, map[string]string{
+		"status": "ok",
+	})
 }
