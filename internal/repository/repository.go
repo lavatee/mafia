@@ -20,6 +20,8 @@ type Auth interface {
 	SignIn(email string, passwordHash string) (mafia.User, error)
 }
 type Rooms interface {
+	JoinRoom(userId int) (int, error)
+	LeaveRoom(userId int) error
 }
 type Friends interface {
 	GetFriends(id int) ([]MongoFriend, error)
@@ -31,6 +33,7 @@ type FriendshipRequests interface {
 type PlayersInRoom interface {
 }
 type Superpowers interface {
+	NewSuperpower(userId int, name string) (int, error)
 }
 type Repository struct {
 	Auth

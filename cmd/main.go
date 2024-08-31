@@ -31,12 +31,15 @@ func main() {
 		log.Fatalf("env error", err.Error())
 	}
 	db, err := repository.NewPostgresDB(repository.PostgresDB{Host: viper.GetString("db.host"), Port: viper.GetString("db.port"), Username: viper.GetString("db.username"), Password: os.Getenv("DB_PASSWORD"), DBName: viper.GetString("db.dbname"), SSLMode: viper.GetString("db.sslmode")})
+	if err != nil {
+		log.Fatalf("db error"+os.Getenv("DB_PASSWORD"), err.Error())
+	}
 	mongoClient, mongoFriendsDB, err := repository.NewMongoDB()
 	if err != nil {
 		log.Fatalf("mongo error", err.Error())
 	}
 	rdb := redis.NewClient(&redis.Options{
-		Addr: "localhost:6379",
+		Addr: "redis:6379",
 	})
 	if err != nil {
 		log.Fatalf("postgres error", err.Error())

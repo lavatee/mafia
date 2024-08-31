@@ -11,3 +11,7 @@ func NewSuperpowersService(repo *repository.Repository) *SuperpowersService {
 		repo: repo,
 	}
 }
+
+func (s *SuperpowersService) NewSuperpower(userId int, name string) (int, error) {
+	return s.repo.NewSuperpower(userId, name)
+}

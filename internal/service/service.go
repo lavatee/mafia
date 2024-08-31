@@ -5,6 +5,8 @@ import (
 	"github.com/lavatee/mafia/internal/repository"
 )
 
+//go:generate mockgen -source=service.go -destination=mocks/mock.go -package=service
+
 type Auth interface {
 	HashPassword(password string) string
 	SignUp(email string, name string, password string) (int, error)
@@ -13,6 +15,8 @@ type Auth interface {
 	Refresh(token string) (string, string, error)
 }
 type Rooms interface {
+	JoinRoom(userId int) (int, error)
+	LeaveRoom(userId int) error
 }
 type Friends interface {
 	GetFriends(id int) ([]repository.MongoFriend, error)
@@ -24,6 +28,7 @@ type FriendshipRequests interface {
 type PlayersInRoom interface {
 }
 type Superpowers interface {
+	NewSuperpower(userId int, name string) (int, error)
 }
 type Service struct {
 	Auth

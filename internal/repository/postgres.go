@@ -16,7 +16,7 @@ type PostgresDB struct {
 }
 
 func NewPostgresDB(d PostgresDB) (*sqlx.DB, error) {
-	db, err := sqlx.Open("postgres", fmt.Sprintf("host=%s port=%s username=%s password=%s dbname=%s sslmode=%s", d.Host, d.Port, d.Username, d.Password, d.DBName, d.SSLMode))
+	db, err := sqlx.Open("postgres", fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s", d.Host, d.Port, d.Username, d.Password, d.DBName, d.SSLMode))
 	if err != nil {
 		return nil, err
 	}

@@ -16,14 +16,14 @@ CREATE TABLE requests
 CREATE TABLE rooms
 (
     id SERIAL PRIMARY KEY,
-    auto_start BIGINT not null,
-    users_quantity BIGINT not null
+    users_quantity BIGINT not null,
+    type varchar(255) not null
 );
 CREATE TABLE players
 (
     id SERIAL PRIMARY KEY,
     user_id int references users(id),
-    user_name varchar(255) references users(name) on delete cascade not null,
+    user_name varchar(255) not null,
     room_id int references rooms(id) on delete cascade not null
 );
 CREATE TABLE superpowers

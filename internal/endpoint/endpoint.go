@@ -39,7 +39,12 @@ func (e *Endpoint) InitRoutes() *gin.Engine {
 	{
 		api.POST("/friends/:friend_id", e.AddFriend)
 		api.GET("/friends", e.GetFriends)
+		api.GET("/requests", e.GetRequests)
+		api.DELETE("/requests/:sender_id", e.RejectRequest)
+		api.POST("/requests/:recipient_id", e.NewRequest)
 		api.PUT("/friends/:friend_id", e.DeleteFriend)
+		api.POST("/joinroom", e.JoinRoom)
+		api.POST("/leaveroom", e.LeaveRoom)
 	}
 	return router
 }

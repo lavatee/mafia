@@ -11,3 +11,11 @@ func NewRoomsService(repo *repository.Repository) *RoomsService {
 		repo: repo,
 	}
 }
+
+func (s *RoomsService) JoinRoom(userId int) (int, error) {
+	return s.repo.JoinRoom(userId)
+}
+
+func (s *RoomsService) LeaveRoom(userId int) error {
+	return s.repo.LeaveRoom(userId)
+}

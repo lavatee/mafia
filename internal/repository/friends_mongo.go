@@ -28,8 +28,24 @@ func NewFriendsMongo(cache *redis.Client, mdb *mongo.Collection, db *sqlx.DB) *F
 
 func (r *FriendsMongo) GetFriends(id int) ([]MongoFriend, error) {
 	result, err := r.cache.Get(context.Background(), fmt.Sprintf("%x", id)).Result()
+	// cursor, er := r.mdb.Find(context.Background(), bson.D{{"Friends", bson.D{{"$exists", true}}}})
+
+	// if er != nil {
+	// 	return nil, er
+	// }
+	// users := make([]MongoUser, 0)
+	// defer cursor.Close(context.Background())
+	// for cursor.Next(context.Background()) {
+	// 	var user MongoUser
+	// 	if err := cursor.Decode(&user); err != nil {
+	// 		return nil, err
+	// 	}
+	// 	users = append(users, user)
+	// }
+	// fmt.Println(users)
+	// fmt.Println(users[0].Id, reflect.TypeOf(users[0].Id))
 	if err != nil {
-		filter := bson.D{{"Id", id}}
+		filter := bson.D{{"id", id}}
 		var user MongoUser
 		err := r.mdb.FindOne(context.Background(), filter).Decode(&user)
 		if err != nil {
@@ -58,6 +74,7 @@ func (r *FriendsMongo) AddFriend(userId int, friendId int) error {
 	if err != nil {
 		return err
 	}
+
 	var userName string
 	query := fmt.Sprintf("SELECT name FROM %s WHERE id=$1", usersTable)
 	row := tx.QueryRow(query, userId)
@@ -74,11 +91,16 @@ func (r *FriendsMongo) AddFriend(userId int, friendId int) error {
 		tx.Rollback()
 		return err
 	}
+	query = fmt.Sprintf("DELETE FROM %s WHERE sender = $1 AND recipient = $2", requestsTable)
+	_, err = tx.Exec(query, friendId, userId)
+	if err != nil {
+		return err
+	}
 	if err := tx.Commit(); err != nil {
 		return err
 	}
 	var user MongoUser
-	filter := bson.D{{"Id", userId}}
+	filter := bson.D{{"id", userId}}
 	err = r.mdb.FindOne(context.Background(), filter).Decode(&user)
 	if err != nil {
 		return err
@@ -86,7 +108,7 @@ func (r *FriendsMongo) AddFriend(userId int, friendId int) error {
 	userFriends := append(user.Friends, MongoFriend{Name: friendName, Id: friendId})
 	update := bson.D{
 		{"$set", bson.D{
-			{"Friends", userFriends},
+			{"friends", userFriends},
 		}},
 	}
 	_, err = r.mdb.UpdateOne(context.Background(), filter, update)
@@ -105,7 +127,7 @@ func (r *FriendsMongo) AddFriend(userId int, friendId int) error {
 		}
 	}
 	var friend MongoUser
-	filter = bson.D{{"Id", friendId}}
+	filter = bson.D{{"id", friendId}}
 	err = r.mdb.FindOne(context.Background(), filter).Decode(&friend)
 	if err != nil {
 		return err
@@ -113,7 +135,7 @@ func (r *FriendsMongo) AddFriend(userId int, friendId int) error {
 	friendFriends := append(friend.Friends, MongoFriend{Name: userName, Id: userId})
 	update = bson.D{
 		{"$set", bson.D{
-			{"Friends", friendFriends},
+			{"friends", friendFriends},
 		}},
 	}
 	_, err = r.mdb.UpdateOne(context.Background(), filter, update)
@@ -159,7 +181,7 @@ func (r *FriendsMongo) DeleteFriend(userId int, friendId int) error {
 		return err
 	}
 	var user MongoUser
-	filter := bson.D{{"Id", userId}}
+	filter := bson.D{{"id", userId}}
 	err = r.mdb.FindOne(context.Background(), filter).Decode(&user)
 	if err != nil {
 		return err
@@ -172,7 +194,7 @@ func (r *FriendsMongo) DeleteFriend(userId int, friendId int) error {
 	}
 	update := bson.D{
 		{"$set", bson.D{
-			{"Friends", userFriends},
+			{"friends", userFriends},
 		}},
 	}
 	_, err = r.mdb.UpdateOne(context.Background(), filter, update)
@@ -191,7 +213,7 @@ func (r *FriendsMongo) DeleteFriend(userId int, friendId int) error {
 		}
 	}
 	var friend MongoUser
-	filter = bson.D{{"Id", friendId}}
+	filter = bson.D{{"id", friendId}}
 	err = r.mdb.FindOne(context.Background(), filter).Decode(&friend)
 	if err != nil {
 		return err
@@ -204,7 +226,7 @@ func (r *FriendsMongo) DeleteFriend(userId int, friendId int) error {
 	}
 	update = bson.D{
 		{"$set", bson.D{
-			{"Friends", friendFriends},
+			{"friends", friendFriends},
 		}},
 	}
 	_, err = r.mdb.UpdateOne(context.Background(), filter, update)

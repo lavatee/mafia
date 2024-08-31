@@ -1,0 +1,34 @@
+version: '3.8'
+services:
+  mafia:
+    build: ./
+    command: ./main
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
+      - mongo
+      - redis
+    environment:
+      - DB_PASSWORD=lavate
+  db:
+    restart: always
+    image: postgres:latest
+    volumes:
+      - ./.database/postgres/data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=lavate
+    ports:
+      - 5432:5432
+  mongo:
+    restart: always
+    image: mongo:latest
+    volumes:
+      - ./data/mongo:/data/db
+    ports:
+      - 27017:27017
+  redis:
+    restart: always
+    image: redis:latest
+    ports:
+      - 6379:6379
