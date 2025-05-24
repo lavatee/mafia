@@ -22,7 +22,7 @@
 | **Деплой**      | Docker          |  
 
 ## **Unit-тестирование**
-Пример unit-теста для метода регистрации:
+Пример unit-теста для метода регистрации (этот тест находится в internal/endpoint/auth_test.go):
 ```Go
 func TestEndpoint_SignUp(t *testing.T) {
 	type mockBehavior func(s *mock_service.MockAuth, user mafia.User)
